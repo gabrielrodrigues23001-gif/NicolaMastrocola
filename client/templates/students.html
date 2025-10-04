@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alunos da Turma {{ turma }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid p-0">
+        <!-- Header -->
+        <header class="bg-primary text-white py-4">
+            <div class="container">
+                <h1 class="h2 mb-0">
+                    <i class="bi bi-people-fill"></i> Alunos da Turma {{ turma }}
+                </h1>
+            </div>
+        </header>
+
+        <!-- Search and Actions -->
+        <div class="container my-4">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" id="searchInput" class="form-control" 
+                               placeholder="Pesquisar por nome ou número...">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button id="openAddCard" class="btn btn-primary">
+                            <i class="bi bi-person-plus"></i> Adicionar Aluno
+                        </button>
+                        <button id="openCSVModal" class="btn btn-success">
+                            <i class="bi bi-file-earmark-spreadsheet"></i> Importar CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students Table -->
+        <div class="container">
+            {% if alunos %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="studentsTable">
+                    <thead class="table-dark">
+                        <tr>
+                            {% for col in header %}
+                            <th>{{ col }}</th>
+                            {% endfor %}
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for aluno in alunos %}
+                        <tr>
+                            {% for cell in aluno %}
+                            {% set i = loop.index0 %}
+                            <td>
+                                {% if header[i]|lower in ['nome', 'nome do aluno', 'aluno'] %}
+                                    <a href="/aluno/{{ turma|lower }}/{{ aluno[0] }}" class="text-decoration-none">
+                                        {{ cell }}
+                                    </a>
+                                {% else %}
+                                    {{ cell }}
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                            <td class="text-center">
+                                <button class="btn btn-danger btn-sm" 
+                                        onclick="excluirAluno('{{ loop.index }}')">
+                                    <i class="bi bi-trash"></i> Excluir
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-people display-1 text-muted"></i>
+                <h3 class="text-muted mt-3">Nenhum aluno encontrado</h3>
+                <p class="text-muted">Adicione alunos manualmente ou importe um arquivo CSV.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Navigation -->
+        <div class="container my-4">
+            <a href="/" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar para a lista de turmas
+            </a>
+        </div>
+    </div>
+
+    <!-- Modal Adicionar Aluno -->
+<div class="modal fade" id="addStudentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Adicionar Novo Aluno</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addStudentForm">
+                    <div class="mb-3">
+                        <label for="ra" class="form-label">RA (Número de Chamada)</label>
+                        <input type="text" class="form-control" id="ra" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nome" class="form-label">Nome Completo</label>
+                        <input type="text" class="form-control" id="nome" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="saveStudentBtn">Salvar Aluno</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Importar CSV -->
+<div class="modal fade" id="csvModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importar Alunos via CSV/Excel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <small>
+                        <strong>Formato esperado:</strong><br>
+                        - Arquivo CSV ou Excel<br>
+                        - Primeira coluna: RA/Número<br>
+                        - Segunda coluna: Nome do aluno<br>
+                        - Cabeçalho opcional (será ignorado)
+                    </small>
+                </div>
+                <form id="csvForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="csvFile" class="form-label">Selecionar arquivo</label>
+                        <input type="file" class="form-control" id="csvFile" accept=".csv,.xlsx,.xls" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" id="importCsvBtn">Importar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <footer class="bg-dark text-white py-3 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">Sistema Escolar - Desenvolvido por Guilherme Francheto Corse</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const turma = "{{ turma|upper }}";
+        
+        // Função para excluir aluno
+        async function excluirAluno(linha) {
+            if (!confirm('Tem certeza que deseja excluir este aluno?\nEsta ação não pode ser desfeita.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/excluir-aluno/${turma}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ linha: linha })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Aluno excluído com sucesso!');
+                    location.reload();
+                } else {
+                    alert('Erro: ' + data.error);
+                }
+            } catch (error) {
+                alert('Erro de conexão: ' + error.message);
+            }
+        }
+
+        // Função de pesquisa
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#studentsTable tbody tr');
+            
+            rows.forEach(row => {
+                let shouldShow = false;
+                const cells = row.querySelectorAll('td');
+                
+                for (let i = 0; i < cells.length - 1; i++) {
+                    if (cells[i].textContent.toLowerCase().includes(filter)) {
+                        shouldShow = true;
+                        break;
+                    }
+                }
+                
+                row.style.display = shouldShow ? '' : 'none';
+            });
+        });
+
+        // Botões de ação
+        document.getElementById('openAddCard').addEventListener('click', function() {
+            const modal = new bootstrap.Modal(document.getElementById('addStudentModal'));
+            modal.show();
+        });
+
+        document.getElementById('openCSVModal').addEventListener('click', function() {
+            const modal = new bootstrap.Modal(document.getElementById('csvModal'));
+            modal.show();
+        });
+
+        // Salvar aluno
+        document.getElementById('saveStudentBtn').addEventListener('click', async function() {
+            const ra = document.getElementById('ra').value.trim();
+            const nome = document.getElementById('nome').value.trim();
+            
+            if (!ra || !nome) {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
+            
+            const btn = this;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Salvando...';
+            
+            try {
+                const response = await fetch(`/adicionar-aluno/${turma}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ ra: ra, nome: nome })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Aluno adicionado com sucesso!');
+                    // Fechar modal e limpar formulário
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addStudentModal'));
+                    modal.hide();
+                    document.getElementById('addStudentForm').reset();
+                    // Recarregar a página para mostrar o novo aluno
+                    location.reload();
+                } else {
+                    alert('Erro: ' + data.error);
+                }
+            } catch (error) {
+                alert('Erro de conexão: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Salvar Aluno';
+            }
+        });
+
+        // Importar CSV
+        document.getElementById('importCsvBtn').addEventListener('click', async function() {
+            const fileInput = document.getElementById('csvFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Por favor, selecione um arquivo.');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const btn = this;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Importando...';
+            
+            try {
+                const response = await fetch(`/importar-csv/${turma}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(data.message);
+                    // Fechar modal e limpar formulário
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('csvModal'));
+                    modal.hide();
+                    document.getElementById('csvForm').reset();
+                    // Recarregar a página para mostrar os novos alunos
+                    location.reload();
+                } else {
+                    alert('Erro: ' + data.error);
+                }
+            } catch (error) {
+                alert('Erro de conexão: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Importar';
+            }
+        });
+
+        // Permitir enviar formulário com Enter no modal de adicionar aluno
+        document.getElementById('addStudentForm').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('saveStudentBtn').click();
+            }
+        });
+
+        // Fechar modais ao clicar em Cancelar ou X
+        document.querySelectorAll('[data-bs-dismiss="modal"]').forEach(button => {
+            button.addEventListener('click', function() {
+                const forms = document.querySelectorAll('#addStudentForm, #csvForm');
+                forms.forEach(form => form.reset());
+            });
+        });
+    </script>
+</body>
+</html>

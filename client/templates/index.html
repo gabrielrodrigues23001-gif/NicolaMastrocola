@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nicola Mastrocola</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .serie-card {
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .serie-card:hover {
+            transform: translateY(-5px);
+        }
+        .turmas-list {
+            display: none;
+        }
+        .chart-container {
+            background: var(--bs-body-bg);
+            border: 1px solid var(--bs-border-color);
+            border-radius: 0.375rem;
+        }
+        .color-box {
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        .bar {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .bar:hover {
+            opacity: 0.8;
+            filter: brightness(1.2);
+        }
+        .axis text {
+            fill: white;
+            font-size: 12px;
+        }
+        .axis path,
+        .axis line {
+            stroke: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <header class="bg-primary text-white py-3">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="h3 mb-0">Nicola Mastrocola</h1>
+                </div>
+                <div class="col-auto">
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-dark text-white">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" class="form-control bg-dark border-dark text-white" 
+                               placeholder="Pesquisar aluno..." id="pesquisa" onkeyup="filtrar()">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container my-4">
+        <!-- Cards das Séries -->
+        <div class="row g-3" id="series-container">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card serie-card border-primary">
+                    <div class="card-body text-center" onclick="toggleTurmas('turmas-6')">
+                        <h5 class="card-title">6º Ano</h5>
+                        <div id="turmas-6" class="turmas-list mt-2">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='/serie/6a'">6A</button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='/serie/6b'">6B</button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='/serie/6c'">6C</button>
+                                <button class="btn btn-outline-primary btn-sm" onclick="window.location.href='/serie/6d'">6D</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card serie-card border-success">
+                    <div class="card-body text-center" onclick="toggleTurmas('turmas-7')">
+                        <h5 class="card-title">7º Ano</h5>
+                        <div id="turmas-7" class="turmas-list mt-2">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-success btn-sm" onclick="window.location.href='/serie/7a'">7A</button>
+                                <button class="btn btn-outline-success btn-sm" onclick="window.location.href='/serie/7b'">7B</button>
+                                <button class="btn btn-outline-success btn-sm" onclick="window.location.href='/serie/7c'">7C</button>
+                                <button class="btn btn-outline-success btn-sm" onclick="window.location.href='/serie/7d'">7D</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card serie-card border-warning">
+                    <div class="card-body text-center" onclick="toggleTurmas('turmas-8')">
+                        <h5 class="card-title">8º Ano</h5>
+                        <div id="turmas-8" class="turmas-list mt-2">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-warning btn-sm" onclick="window.location.href='/serie/8a'">8A</button>
+                                <button class="btn btn-outline-warning btn-sm" onclick="window.location.href='/serie/8b'">8B</button>
+                                <button class="btn btn-outline-warning btn-sm" onclick="window.location.href='/serie/8c'">8C</button>
+                                <button class="btn btn-outline-warning btn-sm" onclick="window.location.href='/serie/8d'">8D</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card serie-card border-info">
+                    <div class="card-body text-center" onclick="toggleTurmas('turmas-9')">
+                        <h5 class="card-title">9º Ano</h5>
+                        <div id="turmas-9" class="turmas-list mt-2">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-info btn-sm" onclick="window.location.href='/serie/9a'">9A</button>
+                                <button class="btn btn-outline-info btn-sm" onclick="window.location.href='/serie/9b'">9B</button>
+                                <button class="btn btn-outline-info btn-sm" onclick="window.location.href='/serie/9c'">9C</button>
+                                <button class="btn btn-outline-info btn-sm" onclick="window.location.href='/serie/9d'">9D</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- EM -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card serie-card border-danger">
+                    <div class="card-body text-center" onclick="toggleTurmas('turmas-1em')">
+                        <h5 class="card-title">1º EM</h5>
+                        <div id="turmas-1em" class="turmas-list mt-2">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-danger btn-sm" onclick="window.location.href='/serie/1a'">1A</button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="window.location.href='/serie/1b'">1B</button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="window.location.href='/serie/1c'">1C</button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="window.location.href='/serie/1d'">1D</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card serie-card border-light">
+                    <div class="card-body text-center" onclick="toggleTurmas('turmas-2em')">
+                        <h5 class="card-title">2º EM</h5>
+                        <div id="turmas-2em" class="turmas-list mt-2">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-light btn-sm" onclick="window.location.href='/serie/2a'">2A</button>
+                                <button class="btn btn-outline-light btn-sm" onclick="window.location.href='/serie/2b'">2B</button>
+                                <button class="btn btn-outline-light btn-sm" onclick="window.location.href='/serie/2c'">2C</button>
+                                <button class="btn btn-outline-light btn-sm" onclick="window.location.href='/serie/2d'">2D</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card serie-card border-secondary">
+                    <div class="card-body text-center" onclick="toggleTurmas('turmas-3em')">
+                        <h5 class="card-title">3º EM</h5>
+                        <div id="turmas-3em" class="turmas-list mt-2">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-secondary btn-sm" onclick="window.location.href='/serie/3a'">3A</button>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="window.location.href='/serie/3b'">3B</button>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="window.location.href='/serie/3c'">3C</button>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="window.location.href='/serie/3d'">3D</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico -->
+        <div class="chart-container mt-5 p-4">
+            <h2 class="text-center mb-4">Registros por Turma</h2>
+            
+            <!-- Filtros -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label for="serieSelect" class="form-label">Selecionar Série:</label>
+                    <select id="serieSelect" class="form-select">
+                        <option value="6">6º Ano</option>
+                        <option value="7">7º Ano</option>
+                        <option value="8">8º Ano</option>
+                        <option value="9">9º Ano</option>
+                        <option value="1">1º EM</option>
+                        <option value="2">2º EM</option>
+                        <option value="3">3º EM</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="tipoSelect" class="form-label">Filtrar por Tipo:</label>
+                    <select id="tipoSelect" class="form-select">
+                        <option value="todos">Todos os Tipos</option>
+                        <!-- Os tipos serão carregados dinamicamente -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Estatísticas -->
+            <div class="row mb-4" id="estatisticas" style="display: none;">
+                <div class="col-12">
+                    <div class="card bg-dark">
+                        <div class="card-body py-2">
+                            <div class="row text-center">
+                                <div class="col-md-3">
+                                    <small class="text-muted">Total de Registros</small>
+                                    <h5 class="mb-0" id="totalRegistros">0</h5>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">Turma com Mais</small>
+                                    <h5 class="mb-0" id="turmaMais">-</h5>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">Média por Turma</small>
+                                    <h5 class="mb-0" id="mediaTurmas">0</h5>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">Tipo Selecionado</small>
+                                    <h5 class="mb-0" id="tipoAtual">Todos</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <svg id="d3Chart" width="100%" height="400"></svg>
+            
+            <!-- Legenda de Cores -->
+            <div class="row mt-4" id="legenda" style="display: none;">
+                <div class="col-12">
+                    <div class="card bg-dark">
+                        <div class="card-header">
+                            <h6 class="mb-0">Legenda de Tipos</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="legenda-tipos">
+                                <!-- Legenda será gerada automaticamente -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-3">
+                <button id="downloadBtn" class="btn btn-success">
+                    <i class="bi bi-download"></i> Baixar planilha da série selecionada
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Resultados da Pesquisa -->
+    <div class="modal fade" id="searchResultsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Resultados da Pesquisa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="searchResultsContent">
+                        <div class="text-center py-4">
+                            <i class="bi bi-search display-4 text-muted"></i>
+                            <p class="text-muted mt-3">Digite um nome para pesquisar</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-3 mt-5">
+        <div class="container text-center">
+            <p class="mb-1">📖 Sistema Escolar - 2025</p>
+            <p class="mb-0">💻 Desenvolvido por <strong>Guilherme Francheto Corse</strong></p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    
+<script>
+    let turmaAbertaAtual = null;
+    let currentSerie = '6';
+    let currentTipo = 'todos';
+    let searchTimeout = null;
+
+    // ====== FUNÇÃO DE PESQUISA DE ALUNO ======
+    async function pesquisarAluno(nome) {
+        if (!nome || nome.length < 2) {
+            return [];
+        }
+
+        try {
+            console.log(`Pesquisando aluno: ${nome}`);
+            const response = await fetch(`/api/pesquisar-aluno/${encodeURIComponent(nome)}`);
+            const data = await response.json();
+            
+            console.log('Resposta da pesquisa:', data);
+            
+            if (data.success) {
+                return data.alunos;
+            } else {
+                console.error('Erro na pesquisa:', data.error);
+                return [];
+            }
+        } catch (error) {
+            console.error('Erro de conexão:', error);
+            return [];
+        }
+    }
+
+    function filtrar() {
+        const input = document.getElementById('pesquisa');
+        const termo = input.value.trim();
+        
+        // Clear previous timeout
+        if (searchTimeout) {
+            clearTimeout(searchTimeout);
+        }
+        
+        // Wait 500ms after user stops typing
+        searchTimeout = setTimeout(async () => {
+            console.log(`Termo de pesquisa: "${termo}"`);
+            
+            if (termo.length >= 2) {
+                console.log('Iniciando pesquisa...');
+                const resultados = await pesquisarAluno(termo);
+                console.log('Resultados encontrados:', resultados);
+                mostrarResultadosPesquisa(resultados, termo);
+            } else {
+                console.log('Termo muito curto, ocultando resultados');
+                // Hide results if search term is too short
+                const modal = bootstrap.Modal.getInstance(document.getElementById('searchResultsModal'));
+                if (modal) {
+                    modal.hide();
+                }
+            }
+        }, 500);
+    }
+
+    function mostrarResultadosPesquisa(alunos, termoPesquisa) {
+        const modalContent = document.getElementById('searchResultsContent');
+        
+        console.log(`Mostrando ${alunos.length} resultados para: "${termoPesquisa}"`);
+        
+        if (alunos.length === 0) {
+            modalContent.innerHTML = `
+                <div class="text-center py-4">
+                    <i class="bi bi-person-x display-4 text-muted"></i>
+                    <h5 class="text-muted mt-3">Nenhum aluno encontrado</h5>
+                    <p class="text-muted">Não foram encontrados alunos para: "${termoPesquisa}"</p>
+                    <small class="text-muted">Verifique se o nome está correto ou tente um termo diferente.</small>
+                </div>
+            `;
+        } else {
+            let html = `
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0">${alunos.length} aluno(s) encontrado(s)</h6>
+                    <small class="text-muted">Pesquisa: "${termoPesquisa}"</small>
+                </div>
+            `;
+            
+            alunos.forEach(aluno => {
+                html += `
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1">${aluno.nome}</h6>
+                                    <small class="text-muted">
+                                        <i class="bi bi-person-badge"></i> RA: ${aluno.ra} | 
+                                        <i class="bi bi-people"></i> Turma: ${aluno.turma}
+                                    </small>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <button class="btn btn-primary btn-sm" onclick="verDetalhesAluno('${aluno.turma}', '${aluno.ra}')">
+                                        <i class="bi bi-eye"></i> Ver Detalhes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            modalContent.innerHTML = html;
+        }
+        
+        // Show modal
+        const modal = new bootstrap.Modal(document.getElementById('searchResultsModal'));
+        modal.show();
+    }
+
+    function verDetalhesAluno(turma, ra) {
+        console.log(`Navegando para aluno: ${ra} da turma ${turma}`);
+        window.location.href = `/aluno/${turma.toLowerCase()}/${ra}`;
+    }
+
+    // ====== FUNÇÕES DAS TURMAS ======
+    function toggleTurmas(id) {
+        const element = document.getElementById(id);
+        
+        // Fechar todas as outras turmas
+        if (turmaAbertaAtual && turmaAbertaAtual !== id) {
+            const elementoAnterior = document.getElementById(turmaAbertaAtual);
+            if (elementoAnterior) {
+                elementoAnterior.style.display = 'none';
+            }
+        }
+        
+        // Alternar a turma atual
+        if (element.style.display === 'block') {
+            element.style.display = 'none';
+            turmaAbertaAtual = null;
+        } else {
+            element.style.display = 'block';
+            turmaAbertaAtual = id;
+        }
+    }
+
+    // Fechar turmas ao clicar fora
+    document.addEventListener('click', function(event) {
+        const seriesContainer = document.getElementById('series-container');
+        const isClickInside = seriesContainer.contains(event.target);
+        
+        if (!isClickInside && turmaAbertaAtual) {
+            const elementoAberto = document.getElementById(turmaAbertaAtual);
+            if (elementoAberto) {
+                elementoAberto.style.display = 'none';
+                turmaAbertaAtual = null;
+            }
+        }
+    });
+
+    // ====== GRÁFICO D3.JS ======
+    const margin = { top: 60, right: 30, bottom: 60, left: 60 };
+    const width = 800 - margin.left - margin.right;
+    const height = 400 - margin.top - margin.bottom;
+
+    // Cores para os tipos
+    const tipoColors = {
+        'advertência': '#dc3545',
+        'ocorrência': '#ff6b35', 
+        'elogio': '#28a745',
+        'observação': '#17a2b8',
+        'todos': '#0d6efd'
+    };
+
+    function initChart() {
+        const svg = d3.select("#d3Chart")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        return svg;
+    }
+
+    async function loadChartData(serie, tipo) {
+        try {
+            let url = `/api/advertencias-por-turma/${serie}`;
+            if (tipo && tipo !== 'todos') {
+                url += `/${tipo}`;
+            }
+            
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            return data;
+        } catch (error) {
+            console.error('Erro ao carregar dados:', error);
+            return { turmas: [], advertencias: [], tipos_disponiveis: [] };
+        }
+    }
+
+    function updateTipoSelect(tipos) {
+        const tipoSelect = document.getElementById('tipoSelect');
+        
+        const todosOption = tipoSelect.querySelector('option[value="todos"]');
+        tipoSelect.innerHTML = '';
+        tipoSelect.appendChild(todosOption);
+        
+        tipos.forEach(tipo => {
+            const option = document.createElement('option');
+            option.value = tipo.toLowerCase();
+            option.textContent = tipo;
+            tipoSelect.appendChild(option);
+        });
+        
+        if (tipos.includes(currentTipo.charAt(0).toUpperCase() + currentTipo.slice(1))) {
+            tipoSelect.value = currentTipo;
+        }
+    }
+
+    function updateEstatisticas(data) {
+        const estatisticas = document.getElementById('estatisticas');
+        const total = data.advertencias.reduce((sum, qtd) => sum + qtd, 0);
+        const maxQuantidade = Math.max(...data.advertencias);
+        const maxIndex = data.advertencias.indexOf(maxQuantidade);
+        const media = data.advertencias.length > 0 ? (total / data.advertencias.length).toFixed(1) : 0;
+        
+        document.getElementById('totalRegistros').textContent = total;
+        document.getElementById('turmaMais').textContent = maxQuantidade > 0 ? data.turmas[maxIndex] : '-';
+        document.getElementById('mediaTurmas').textContent = media;
+        document.getElementById('tipoAtual').textContent = data.tipo_selecionado === 'todos' ? 'Todos' : 
+            data.tipo_selecionado.charAt(0).toUpperCase() + data.tipo_selecionado.slice(1);
+        
+        estatisticas.style.display = total > 0 ? 'block' : 'none';
+    }
+
+    function getBarColor(tipo) {
+        return tipoColors[tipo] || tipoColors['todos'];
+    }
+
+    async function updateChart(serie, tipo = 'todos') {
+        currentSerie = serie;
+        currentTipo = tipo;
+        
+        const data = await loadChartData(serie, tipo);
+        
+        if (data.tipos_disponiveis && data.tipos_disponiveis.length > 0) {
+            updateTipoSelect(data.tipos_disponiveis);
+        }
+        
+        updateEstatisticas(data);
+        
+        d3.select("#d3Chart").selectAll("*").remove();
+        
+        if (data.turmas.length === 0 || data.advertencias.every(q => q === 0)) {
+            d3.select("#d3Chart")
+                .append("text")
+                .attr("x", (width + margin.left + margin.right) / 2)
+                .attr("y", (height + margin.top + margin.bottom) / 2)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#6c757d")
+                .text("Nenhum registro encontrado para os filtros selecionados");
+            return;
+        }
+
+        const svg = initChart();
+        
+        const x = d3.scaleBand()
+            .domain(data.turmas)
+            .range([0, width])
+            .padding(0.3);
+
+        const y = d3.scaleLinear()
+            .domain([0, d3.max(data.advertencias) || 5])
+            .range([height, 0]);
+
+        svg.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(x))
+            .selectAll("text")
+            .attr("transform", "rotate(-45)")
+            .style("text-anchor", "end")
+            .attr("fill", "white");
+
+        svg.append("g")
+            .call(d3.axisLeft(y))
+            .selectAll("text")
+            .attr("fill", "white");
+
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left)
+            .attr("x", 0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .attr("fill", "white")
+            .text("Quantidade de Registros");
+
+        svg.append("text")
+            .attr("transform", `translate(${width / 2}, ${height + margin.bottom - 10})`)
+            .style("text-anchor", "middle")
+            .attr("fill", "white")
+            .text("Turmas");
+
+        const barColor = getBarColor(tipo);
+
+        svg.selectAll(".bar")
+            .data(data.turmas)
+            .enter()
+            .append("rect")
+            .attr("class", "bar")
+            .attr("x", (d, i) => x(d))
+            .attr("y", (d, i) => y(data.advertencias[i]))
+            .attr("width", x.bandwidth())
+            .attr("height", (d, i) => height - y(data.advertencias[i]))
+            .attr("fill", barColor)
+            .attr("rx", 3)
+            .on("mouseover", function(event, d) {
+                const index = data.turmas.indexOf(d);
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("fill", "#ffffff");
+                
+                svg.append("text")
+                    .attr("class", "tooltip")
+                    .attr("x", x(d) + x.bandwidth() / 2)
+                    .attr("y", y(data.advertencias[index]) - 15)
+                    .attr("text-anchor", "middle")
+                    .attr("fill", "white")
+                    .attr("font-weight", "bold")
+                    .attr("font-size", "12px")
+                    .text(`${data.advertencias[index]} registros`);
+            })
+            .on("mouseout", function(event, d) {
+                const index = data.turmas.indexOf(d);
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("fill", barColor);
+                
+                svg.selectAll(".tooltip").remove();
+            });
+
+        svg.selectAll(".bar-label")
+            .data(data.turmas)
+            .enter()
+            .append("text")
+            .attr("class", "bar-label")
+            .attr("x", (d, i) => x(d) + x.bandwidth() / 2)
+            .attr("y", (d, i) => y(data.advertencias[i]) - 5)
+            .attr("text-anchor", "middle")
+            .attr("fill", "white")
+            .attr("font-weight", "bold")
+            .attr("font-size", "12px")
+            .text((d, i) => data.advertencias[i] > 0 ? data.advertencias[i] : '');
+
+        const tipoDisplay = tipo === 'todos' ? 'Todos os Tipos' : 
+            tipo.charAt(0).toUpperCase() + tipo.slice(1);
+            
+        svg.append("text")
+            .attr("x", width / 2)
+            .attr("y", 0 - (margin.top / 2))
+            .attr("text-anchor", "middle")
+            .attr("fill", "white")
+            .attr("font-size", "16px")
+            .attr("font-weight", "bold")
+            .text(`Registros - ${getSerieName(serie)} - ${tipoDisplay}`);
+    }
+
+    function getSerieName(serie) {
+        const series = {
+            '6': '6º Ano',
+            '7': '7º Ano',
+            '8': '8º Ano',
+            '9': '9º Ano',
+            '1': '1º EM',
+            '2': '2º EM',
+            '3': '3º EM'
+        };
+        return series[serie] || 'Série';
+    }
+
+    // Event listeners
+    document.getElementById('serieSelect').addEventListener('change', function() {
+        updateChart(this.value, currentTipo);
+    });
+
+    document.getElementById('tipoSelect').addEventListener('change', function() {
+        updateChart(currentSerie, this.value);
+    });
+
+    document.getElementById('downloadBtn').addEventListener('click', async function() {
+        const serie = document.getElementById('serieSelect').value;
+        
+        try {
+            const response = await fetch(`/api/baixar-planilha-serie/${serie}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                window.open(data.url, '_blank');
+            } else {
+                alert('Erro: ' + data.error);
+            }
+        } catch (error) {
+            alert('Erro de conexão: ' + error.message);
+        }
+    });
+
+    // Inicializar gráfico
+    document.addEventListener('DOMContentLoaded', function() {
+        updateChart('6', 'todos');
+    });
+</script>
+</body>
+</html>
